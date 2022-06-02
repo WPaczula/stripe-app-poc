@@ -19,7 +19,9 @@
       "connect-src": [
         "https://new-app.dev.yordex.com/api/sessions"
       ],
-      "image-src": null,
+      "image-src": [
+        "https://blocventures.com/wp-content/uploads/2020/03/yordex_1.png"
+      ],
       "purpose": ""
     }
   },
