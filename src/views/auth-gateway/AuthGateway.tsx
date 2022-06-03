@@ -5,12 +5,11 @@ import { useLogout } from '../../hooks/authentication/useLogout'
 import Login from '../login/Login'
 
 const AuthGateway = ({ userContext }: ExtensionContextValue) => {
-  const { session, isLoading: isSessionloading, refetch } = useLoadSession(userContext.id)
+  const { session, isLoading: isSessionloading } = useLoadSession(userContext.id)
   const { logout, isLoading: isLogoutLoading } = useLogout(userContext.id)
 
   const onLogout = async () => {
     await logout()
-    refetch()
   }
 
   if (isSessionloading) {
