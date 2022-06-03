@@ -3,14 +3,23 @@
   "version": "0.0.1",
   "name": "Yordex",
   "icon": "",
-  "permissions": [],
+  "permissions": [
+    {
+      "permission": "secret_write",
+      "purpose": "Allows storing secrets between page reloads"
+    },
+    {
+      "permission": "secret_read",
+      "purpose": "Allows get secrets between page reloads"
+    }
+  ],
   "app_backend": {
     "webhooks": null
   },
   "ui_extension": {
     "views": [
       {
-        "viewport": "stripe.dashboard.customer.detail",
+        "viewport": "stripe.dashboard.drawer.default",
         "component": "App"
       }
     ],
