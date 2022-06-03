@@ -1,18 +1,12 @@
-import { createContext, useContext, useState } from "react"
+import { useQuery } from "react-query"
+import { getSession } from "../../server/session"
 import { Session } from "../../types/session"
+import { APIError } from "../../utils/request"
 
-const SessionContext = createContext<[Session | undefined, (session: Session | undefined) => void]>([undefined, () => { throw new Error('Not implemented setSession') }])
+export const getSessionKey = (userId: string) => ['session', userId]
 
-interface Props {
-  children: React.ReactNode
-}
+export const useSession = (userId: string) => {
+  const { data, isLoading, error } = useQuery<Session, APIError>(getSessionKey(userId), { queryFn: () => getSession(userId), retry: false })
 
-export const SessionContextProvider = ({ children }: Props) => {
-  const [session, setSession] = useState<Session | undefined>(undefined)
-
-  return <SessionContext.Provider value={[session, setSession]}>{children}</SessionContext.Provider>
-}
-
-export const useSession = () => {
-  return useContext(SessionContext)
+  return { session: data, error, isLoading }
 }

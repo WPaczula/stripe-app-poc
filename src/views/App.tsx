@@ -1,12 +1,16 @@
+import React from 'react'
 import { ContextView } from "@stripe/ui-extension-sdk/ui";
 import type { ExtensionContextValue } from '@stripe/ui-extension-sdk/context';
 import BrandIcon from "./brand_icon.svg";
-import { SessionContextProvider } from "../hooks/authentication/useSession";
 import AuthGateway from "./auth-gateway/AuthGateway";
+import { QueryClient, QueryClientProvider } from "react-query";
+
+const client = new QueryClient()
+
 
 const App = (props: ExtensionContextValue) => {
   return (
-    <SessionContextProvider>
+    <QueryClientProvider client={client}>
       <ContextView
         title="Yordex app"
         brandColor="#f7f8fa"
@@ -18,7 +22,7 @@ const App = (props: ExtensionContextValue) => {
       >
         <AuthGateway {...props} />
       </ContextView >
-    </SessionContextProvider>
+    </QueryClientProvider>
   );
 };
 

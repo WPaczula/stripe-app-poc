@@ -1,30 +1,16 @@
-import { useCallback, useState } from "react"
+import { useMutation, useQueryClient } from "react-query"
 import { removeSession } from "../../server/session"
 import { clearAuthenticationToken } from "../../utils/authentication"
-import { isAPIError } from "../../utils/request"
-import { useSession } from "./useSession"
+import { getSessionKey } from "./useSession"
 
 export const useLogout = (userId: string) => {
-  const [_, setSession] = useSession()
-  const [isLoading, setIsLoading] = useState(false)
-
-  const logout = useCallback(async () => {
-    try {
-      setIsLoading(true)
-      await removeSession(userId)
-    } catch (e) {
-      if (isAPIError(e)) {
-        console.log(e.reason)
-      } else {
-        console.log(e)
-      }
-    }
-    finally {
-      setSession(undefined)
-      setIsLoading(false)
+  const queryClient = useQueryClient()
+  const logoutMutation = useMutation({
+    mutationFn: () => removeSession(userId), onSettled: async () => {
+      await queryClient.resetQueries({ queryKey: getSessionKey(userId) })
       await clearAuthenticationToken(userId)
     }
-  }, [userId, setSession])
+  })
 
-  return { logout, isLoading }
+  return { logout: logoutMutation.mutate, isLoading: logoutMutation.isLoading }
 }

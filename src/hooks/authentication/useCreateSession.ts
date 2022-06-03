@@ -1,30 +1,17 @@
-import { useCallback, useState } from "react"
-import { isAPIError } from "../../utils/request"
+import { APIError } from "../../utils/request"
 import { saveAuthenticationToken } from '../../utils/authentication'
 import { createSession } from "../../server/session"
-import { useSession } from "./useSession"
+import { useMutation, useQueryClient } from "react-query"
+import { Session } from "../../types/session"
 
-export const useCreateSession = (userId: string) => {
-  const [_, setSession] = useSession()
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-
-  const createSessionAsync = useCallback(async (username: string, password: string) => {
-    try {
-      setIsLoading(true)
-      const session = await createSession(username, password, userId)
+export const useCreateSession = (userId: string, username: string, password: string) => {
+  const queryClient = useQueryClient()
+  const createSessionMutation = useMutation<Session, APIError>({
+    mutationFn: () => createSession(username, password, userId), onSuccess: async (session) => {
+      queryClient.setQueryData(['session', userId], session)
       await saveAuthenticationToken(userId, session.token)
-      setSession(session)
-    } catch (e) {
-      if (isAPIError(e)) {
-        setError(e.reason)
-      } else {
-        setError('Something went wrong, please try again later')
-      }
-    } finally {
-      setIsLoading(false)
     }
-  }, [userId, setSession])
+  })
 
-  return { createSession: createSessionAsync, error, isLoading }
+  return { createSession: createSessionMutation.mutate, error: createSessionMutation.error, isLoading: createSessionMutation.isLoading }
 }
